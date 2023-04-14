@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+// RecordType
+struct RecordType
+{
+	int		id;
+	char	name;
+	int		order; 
+};
+
+// Fill out this structure
+struct HashType
+{
+struct RecordType* data;
+int size;
+};
+
+// Compute the hash function
+int hash(int x, int size)
+{
+return x % size;
+}
+
+// parses input file to an integer array
+int parseData(char* inputFileName, struct RecordType** ppData)
+{
+	FILE* inFile = fopen(inputFileName, "r");
+	int dataSz = 0;
+	int i, n;
+	char c;
+	struct RecordType *pRecord;
+	*ppData = NULL;
+
+	if (inFile)
+	{
+		fscanf(inFile, "%d\n", &dataSz);
+		*ppData = (struct RecordType*) malloc(sizeof(struct RecordType) * dataSz);
+		// Implement parse data block
+		if (*ppData == NULL)
+		{
+			printf("Cannot allocate memory\n");
+			exit(-1);
+		}
+		for (i = 0; i < dataSz; ++i)
+		{
+			pRecord = *ppData + i;
+			fscanf(inFile, "%d ", &n);
+			pRecord->id = n;
+			fscanf(inFile, "%c ", &c);
+			pRecord->name = c;
+			fscanf(inFile, "%d ", &n);
+			pRecord->order = n;
+		}
+
+		fclose(inFile);
+	}
+
+	return dataSz;
+}
+
+// prints the records
+void printRecords(struct RecordType pData[], int dataSz)
+{
+	int i;
+	printf("\nRecords:\n");
+	for (i = 0; i < dataSz; ++i)
+	{
+		printf("\t%d %c %d\n", pData[i].id, pData[i].name, pData[i].order);
+	}
+	printf("\n\n");
+}
+
+// display records in the hash structure
+// skip the indices which are free
+// the output will be in the format:
+// index x -> id, name, order -> id, name, order ....
+void displayRecordsInHash(struct HashType *pHashArray, int hashSz)
+{
+	int i, j;
+  struct RecordType *pRecord;
+
+	for (i=0;i<hashSz;++i)
+	{
+		
+     pRecord = (pHashArray + i)->data;
+        if (pRecord != NULL)
+        {
+            printf("Index %d ->", i);
+            for (j = 0; j < (pHashArray + i)->size; ++j)
+            {
+                if ((pRecord + j)->id != -1)
+                {
+                    printf(" %d %c %d ->", (pRecord + j)->id, (pRecord + j)->name, (pRecord + j)->order);
+                }
+            }
+            printf("\n");
+   
+    }
+    
+    // if index is occupied with any records, print all
+	}
+}
+
+int main(void)
+{
+	
+    struct RecordType* pRecords;
+    int recordSz = 0;
+    struct HashType hashTable;
+    int hashSz = 0;
+    int i, index;
+
+	recordSz = parseData("input.txt", &pRecords);
+	printRecords(pRecords, recordSz);
+  
+  
+	// Your hash implementation
+  
+  hashTable.size= recordSz; 
+  hashTable.data =(struct RecordType*)malloc(sizeof(struct RecordType) * recordSz);
+  for (i = 0; i < recordSz; ++i)
+  {
+     index = hash((pRecords + i)->id, hashTable.size);
+        if ((hashTable.data + index)->id == -1)
+        {
+            (hashTable.data + index)->id = (pRecords + i)->id;
+            (hashTable.data + index)->name = (pRecords + i)->name;
+            (hashTable.data + index)->order = (pRecords + i)->order;
+}
+  else
+{
+  int j = index;
+do
+{
+j = (j + 1) % hashTable.size;
+} 
+while ((hashTable.data + j)->id != -1 && j != index);
+if (j != index)
+{
+          (hashTable.data + j)->id = (pRecords + i)->id;
+          (hashTable.data + j)->name = (pRecords + i)->name;
+          (hashTable.data + j)->order = (pRecords + i)->order;
+}
+  else
+{
+printf("Hash table is full, cannot insert %d\n", (pRecords + i)->id);
+}
+}
+     
+}
