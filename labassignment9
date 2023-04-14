@@ -148,5 +148,5 @@ if (j != index)
 printf("Hash table is full, cannot insert %d\n", (pRecords + i)->id);
 }
 }
-     
+     }
 }
