@@ -53,6 +53,6 @@ int main(void) {
     
     trie = deallocateTrie(trie);
     if (trie != NULL)
-        printf("There is an error in this program\n");
+        printf("There is an error in this program! \n");
     return 0;
 }
